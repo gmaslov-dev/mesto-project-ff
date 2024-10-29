@@ -20,7 +20,7 @@ function createCard(title, src, deleteHandler) {
 
 // Функция удаления карточки
 function deleteCard(evt) {
-  const card = evt.target.closest('.card'); // @todo: Выбрать карточку
+  const card = evt.target.closest('.card');
   card.remove();
 }
 
