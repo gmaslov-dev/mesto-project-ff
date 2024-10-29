@@ -1,5 +1,6 @@
 // template карточки
 const cardTemplate = document.querySelector('#card-template').content;
+
 // DOM узлы
 const cardContainer = document.querySelector('.places__list');
 
