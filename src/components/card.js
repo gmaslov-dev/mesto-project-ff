@@ -1,11 +1,5 @@
-// template карточки
-const cardTemplate = document.querySelector('#card-template').content;
-
-// DOM узлы
-const cardContainer = document.querySelector('.places__list');
-
 // Функция создания карточки
-function createCard(title, src, deleteHandler) {
+function createCard(cardTemplate, title, src, deleteHandler) {
   const card = cardTemplate.querySelector('.card').cloneNode(true);
   const img = card.querySelector('.card__image');
   const deleteBtn = card.querySelector('.card__delete-button');
@@ -24,8 +18,4 @@ function deleteCard(evt) {
   card.remove();
 }
 
-// Вывод карточек на страницу
-initialCards.forEach(({name, link}) => {
-  const card = createCard(name, link, deleteCard);
-  cardContainer.append(card);
-});
+export { createCard, deleteCard };
