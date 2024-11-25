@@ -1,4 +1,4 @@
-function createCard(cardTemplate, title, src, deleteHandler, likeHandler) {
+function createCard(cardTemplate, title, src, deleteHandler, likeHandler, viewHandler) {
   const card = cardTemplate.querySelector('.card').cloneNode(true);
   const img = card.querySelector('.card__image');
   const deleteBtn = card.querySelector('.card__delete-button');
@@ -7,6 +7,8 @@ function createCard(cardTemplate, title, src, deleteHandler, likeHandler) {
   card.querySelector('.card__title').textContent = title;
   img.src = src;
   img.alt = title;
+
+  img.addEventListener('click', viewHandler);
   deleteBtn.addEventListener('click', deleteHandler);
   likeBtn.addEventListener('click', likeHandler)
 

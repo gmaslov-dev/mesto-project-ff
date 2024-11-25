@@ -37,7 +37,7 @@ const cardLinkInput = formMestoAdd.elements.link;
 
 // Функции
 function renderCard(name, link, isNew=false) {
-  const card = createCard(cardTemplate, name, link, deleteCard, likeCard);
+  const card = createCard(cardTemplate, name, link, deleteCard, likeCard, handleImageView);
   if (isNew) {
     cardContainer.prepend(card);
   } else {
@@ -46,6 +46,16 @@ function renderCard(name, link, isNew=false) {
 }
 
 // Обработчики
+function handleImageView(evt) {
+  const currentImg = evt.target;
+
+    modalImageViewPicture.src = currentImg.src;
+    modalImageViewPicture.alt = currentImg.alt;
+    modalImageViewCaption.textContent = currentImg.alt;
+
+    openModal(modalImageView);
+}
+
 function handleModalClose(evt) {
   const modal = evt.currentTarget;
 
@@ -75,6 +85,11 @@ function handleFormSubmit(evt) {
 // Вывод карточек на страницу
 getData().forEach(({ name, link }) => renderCard(name, link));
 
+// Обработчики
+modalProfileEdit.addEventListener('click', handleModalClose);
+modalMestoAdd.addEventListener('click', handleModalClose);
+modalImageView.addEventListener('click', handleModalClose);
+
 // Обработчики форм
 formProfileEdit.addEventListener('submit', handleFormSubmit);
 formMestoAdd.addEventListener('submit', handleFormSubmit);
@@ -86,26 +101,9 @@ btnProfileEdit.addEventListener('click', () => {
   jobInput.value = description.textContent;
 
   openModal(modalProfileEdit);
-  modalProfileEdit.addEventListener('click', handleModalClose);
 });
 
 // Добавление карточки
 btnMestoAdd.addEventListener('click', () => {
   openModal(modalMestoAdd);
-  modalMestoAdd.addEventListener('click', handleModalClose)
-});
-
-// Просмотр изображения
-cardContainer.addEventListener('click', (evt) => {
-  if (evt.target.classList.contains('card__image')) {
-    const currentImg = evt.target;
-
-    modalImageViewPicture.src = currentImg.src;
-    modalImageViewPicture.alt = currentImg.alt;
-
-    modalImageViewCaption.textContent = currentImg.alt;
-
-    openModal(modalImageView);
-    modalImageView.addEventListener('click', handleModalClose);
-  }
 });
