@@ -1,0 +1,7 @@
+.popup__button_inactive {
+  color: #c4c4c4;
+  outline: 1px solid #c4c4c4;
+  background-color: #fff;
+  pointer-events: none;
+  user-select: none;
+}

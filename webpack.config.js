@@ -4,6 +4,9 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
+  // включение source maps
+  devtool: 'source-map',
+
   entry: {
     main: './src/pages/index.js'
   },
