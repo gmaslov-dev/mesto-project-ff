@@ -3,6 +3,7 @@ import './index.css';
 import { getData } from '../components/cardsData';
 import { createCard, deleteCard, likeCard } from '../components/card';
 import { closeModal, openModal } from '../components/modal';
+import { clearValidation, enableValidation } from '../components/validation';
 
 // DOM-узлы
 const cardTemplate = document.querySelector('#card-template').content;
@@ -34,6 +35,15 @@ const formMestoAdd = document.forms['new-place'];
 const cardNameInput = formMestoAdd.elements['place-name'];
 const cardLinkInput = formMestoAdd.elements.link;
 
+// Настройки
+const validationSettings = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+}
 
 // Функции
 function renderCard(name, link, isNew=false) {
@@ -79,6 +89,7 @@ function handleFormSubmit(evt) {
     renderCard(cardNameInput.value, cardLinkInput.value, true);
     closeModal(modalMestoAdd);
     currentForm.reset();
+    clearValidation(currentForm, validationSettings);
   }
 }
 
@@ -99,7 +110,7 @@ formMestoAdd.addEventListener('submit', handleFormSubmit);
 btnProfileEdit.addEventListener('click', () => {
   nameInput.value = title.textContent;
   jobInput.value = description.textContent;
-
+  clearValidation(formProfileEdit, validationSettings);
   openModal(modalProfileEdit);
 });
 
@@ -108,71 +119,5 @@ btnMestoAdd.addEventListener('click', () => {
   openModal(modalMestoAdd);
 });
 
-
-// Валидация полей
-
-// добавление класса с ошибкой
-const showInputError = (formElement, inputElement, errorMessage) => {
-  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-  inputElement.classList.add('popup__input_type_error');
-  errorElement.textContent = errorMessage;
-  errorElement.classList.add('popup__input-error_active');
-};
-
-// удаление класса с ошибкой
-const hideInputError = (formElement, inputElement) => {
-  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-
-  inputElement.classList.remove('popup__input_type_error');
-  errorElement.classList.remove('popup__input-error_active');
-  errorElement.textContent = '';
-};
-
-const hasInvalidInput = (inputList) => {
-  return inputList.some((inputElement) => {
-    return !inputElement.validity.valid;
-  })
-};
-
-const toggleButtonState = (inputList, buttonElement) => {
-  if(hasInvalidInput(inputList)) {
-    buttonElement.disabled = true;
-    buttonElement.classList.add('popup__button_inactive');
-  } else {
-    buttonElement.disabled = false;
-    buttonElement.classList.remove('popup__button_inactive');
-  }
-}
-
-// проверка валидности поля
-const isValid = (formElement, inputElement) => {
-  if (!inputElement.validity.valid) {
-    showInputError(formElement, inputElement, inputElement.validationMessage);
-  } else {
-    hideInputError(formElement, inputElement);
-  }
-};
-
-const setEventListeners = (formElement) => {
-  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-  const buttonElement = formElement.querySelector('.popup__button');
-
-  toggleButtonState(inputList, buttonElement);
-
-  inputList.forEach((inputElement) => {
-    inputElement.addEventListener('input', () => {
-      isValid(formElement, inputElement);
-      toggleButtonState(inputList, buttonElement);
-    });
-  });
-};
-
-const enableValidation = () => {
-  const formList = Array.from(document.querySelectorAll('.popup__form'));
-
-  formList.forEach((formElement) => {
-    setEventListeners(formElement);
-  });
-};
-
-enableValidation();
+// Включение валидации форм
+enableValidation(validationSettings);
