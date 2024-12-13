@@ -50,6 +50,9 @@ const validationSettings = {
 const token = 'aa73eb14-67e0-49b7-b4c6-6839fe35bf10';
 const cohortId = 'wff-cohort-29';
 
+// Функция взаимодействия с api
+const fetchData = createApiRequest(cohortId, token);
+
 // Функции
 function renderCard(name, link, isNew=false) {
   const card = createCard(cardTemplate, name, link, deleteCard, likeCard, handleImageView);
@@ -128,8 +131,8 @@ btnMestoAdd.addEventListener('click', () => {
 enableValidation(validationSettings);
 
 
-// Работа с api
-const fetchData = createApiRequest(cohortId, token);
+// Работа с API
+// Получаем данные профиля/карточки
 
 Promise.all([fetchData(apiEndpoint.PROFILE.DATA), fetchData(apiEndpoint.CARDS.LIST)])
   .then(([resProfile, resData]) => {
@@ -137,6 +140,22 @@ Promise.all([fetchData(apiEndpoint.PROFILE.DATA), fetchData(apiEndpoint.CARDS.LI
     console.log(resData);
   });
 
-// изменение данных профиля
-fetchData(apiEndpoint.PROFILE.DATA, httpMethod.PATCH, {name: 'John', about: 'Doe'})
-  .then((res) => console.log(res));
+// Редактирование профиля
+// fetchData(apiEndpoint.PROFILE.DATA, httpMethod.PATCH, {name: 'John', about: 'Doe'})
+//   .then((res) => console.log(res));
+
+// Добавление новой карточки
+// fetchData(apiEndpoint.CARDS.LIST, httpMethod.POST, {name: 'Переславль-Залесский', link: 'https://azbyka.ru/palomnik/images/d/de/Горицкий_монастырь.JPG'})
+//   .then((res) => console.log(res._id));
+
+// Удаление лайка
+// fetchData(apiEndpoint.CARDS.LIKES('675b2d412ea9d60bd1324a1e'), httpMethod.DELETE)
+//   .then((res) => console.log(res));
+
+// постановка лайка
+// fetchData(apiEndpoint.CARDS.LIKES('675b2d412ea9d60bd1324a1e'), httpMethod.PUT)
+//   .then((res) => console.log(res));
+
+// Удаление карточки
+// fetchData(apiEndpoint.CARDS.SPECIFIC(cardId), httpMethod.DELETE)
+//   .then((res) => console.log(res));

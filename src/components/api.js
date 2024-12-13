@@ -3,6 +3,8 @@ const API_BASE_URL = 'https://nomoreparties.co';
 const apiEndpoint = {
   CARDS: {
     LIST: '/cards',
+    SPECIFIC: (cardId) => `/cards/${cardId}`,
+    LIKES: (cardId) => `/cards/likes/${cardId}`
   },
   PROFILE: {
     DATA: '/users/me',
