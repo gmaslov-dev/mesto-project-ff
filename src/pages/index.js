@@ -4,6 +4,7 @@ import { getData } from '../components/cardsData';
 import { createCard, deleteCard, likeCard } from '../components/card';
 import { closeModal, openModal } from '../components/modal';
 import { clearValidation, enableValidation } from '../components/validation';
+import { createApiRequest, httpMethod, apiEndpoint } from '../components/api';
 
 // DOM-узлы
 const cardTemplate = document.querySelector('#card-template').content;
@@ -32,10 +33,10 @@ const nameInput = formProfileEdit.elements.name;
 const jobInput = formProfileEdit.elements.description;
 
 const formMestoAdd = document.forms['new-place'];
-const cardNameInput = formMestoAdd.elements['place-name'];
+const cardNameInput = formMestoAdd.elements['place-natokenme'];
 const cardLinkInput = formMestoAdd.elements.link;
 
-// Настройки
+// Настройки валидации
 const validationSettings = {
   formSelector: '.popup__form',
   inputSelector: '.popup__input',
@@ -44,6 +45,10 @@ const validationSettings = {
   inputErrorClass: 'popup__input_type_error',
   errorClass: 'popup__error_visible'
 }
+
+// Данные для взаимодействия с api
+const token = 'aa73eb14-67e0-49b7-b4c6-6839fe35bf10';
+const cohortId = 'wff-cohort-29';
 
 // Функции
 function renderCard(name, link, isNew=false) {
@@ -121,3 +126,17 @@ btnMestoAdd.addEventListener('click', () => {
 
 // Включение валидации форм
 enableValidation(validationSettings);
+
+
+// Работа с api
+const fetchData = createApiRequest(cohortId, token);
+
+Promise.all([fetchData(apiEndpoint.PROFILE.DATA), fetchData(apiEndpoint.CARDS.LIST)])
+  .then(([resProfile, resData]) => {
+    console.log(resProfile);
+    console.log(resData);
+  });
+
+// изменение данных профиля
+fetchData(apiEndpoint.PROFILE.DATA, httpMethod.PATCH, {name: 'John', about: 'Doe'})
+  .then((res) => console.log(res));
