@@ -1,27 +1,37 @@
-function createCard(cardTemplate, title, src, deleteHandler, likeHandler, viewHandler) {
+import { deleteCard } from "./api";
+function createCard(cardTemplate, cardData, handlers) {
   const card = cardTemplate.querySelector('.card').cloneNode(true);
   const img = card.querySelector('.card__image');
   const deleteBtn = card.querySelector('.card__delete-button');
   const likeBtn = card.querySelector('.card__like-button');
 
-  card.querySelector('.card__title').textContent = title;
-  img.src = src;
-  img.alt = title;
+  card.querySelector('.card__title').textContent = cardData.name;
+  img.alt = cardData.name;
+  img.src = cardData.link;
+  card.dataset.id = cardData._id;
 
-  img.addEventListener('click', viewHandler);
-  deleteBtn.addEventListener('click', deleteHandler);
-  likeBtn.addEventListener('click', likeHandler)
+  img.addEventListener('click', handlers.view);
+  deleteBtn.addEventListener('click', handlers.delete);
+  likeBtn.addEventListener('click', handlers.like);
 
   return card;
 }
 
-function deleteCard(evt) {
+function handleDelete(evt) {
   const card = evt.target.closest('.card');
-  card.remove();
+  const id = card.dataset.id;
+  deleteCard(id)
+    .then(() => card.remove())
+    .catch(err => console.log(err));
 }
 
-function likeCard (evt) {
+function handleLike (evt) {
   evt.target.classList.toggle('card__like-button_is-active');
 }
 
-export { createCard, deleteCard, likeCard };
+function showDeleteBtn(card) {
+  const deleteBtn = card.querySelector('.card__delete-button');
+  deleteBtn.removeAttribute('hidden');
+}
+
+export { createCard, handleDelete, handleLike, showDeleteBtn };

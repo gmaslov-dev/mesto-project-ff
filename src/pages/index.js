@@ -1,10 +1,9 @@
 import './index.css';
 
-import { getData } from '../components/cardsData';
-import { createCard, deleteCard, likeCard } from '../components/card';
+import { createCard, handleLike, handleDelete, showDeleteBtn } from '../components/card';
 import { closeModal, openModal } from '../components/modal';
 import { clearValidation, enableValidation } from '../components/validation';
-import { createApiRequest, httpMethod, apiEndpoint } from '../components/api';
+import { getInitialCards, getUserInfo, updateProfile, addCard } from '../components/api';
 
 // DOM-узлы
 const cardTemplate = document.querySelector('#card-template').content;
@@ -14,6 +13,7 @@ const cardContainer = document.querySelector('.places__list');
 const profile = document.querySelector('.profile');
 const title = profile.querySelector('.profile__title');
 const description = profile.querySelector('.profile__description');
+const avatar = profile.querySelector('.profile__image');
 
 // Кнопки
 const btnProfileEdit = document.querySelector('.profile__edit-button');
@@ -30,10 +30,11 @@ const modalImageViewCaption = document.querySelector('.popup__caption');
 // Формы
 const formProfileEdit = document.forms['edit-profile'];
 const nameInput = formProfileEdit.elements.name;
+
 const jobInput = formProfileEdit.elements.description;
 
 const formMestoAdd = document.forms['new-place'];
-const cardNameInput = formMestoAdd.elements['place-natokenme'];
+const cardNameInput = formMestoAdd.elements['place-name'];
 const cardLinkInput = formMestoAdd.elements.link;
 
 // Настройки валидации
@@ -44,24 +45,30 @@ const validationSettings = {
   inactiveButtonClass: 'popup__button_disabled',
   inputErrorClass: 'popup__input_type_error',
   errorClass: 'popup__error_visible'
-}
-
-// Данные для взаимодействия с api
-const token = 'aa73eb14-67e0-49b7-b4c6-6839fe35bf10';
-const cohortId = 'wff-cohort-29';
-
-// Функция взаимодействия с api
-const fetchData = createApiRequest(cohortId, token);
+};
 
 // Функции
-function renderCard(name, link, isNew=false) {
-  const card = createCard(cardTemplate, name, link, deleteCard, likeCard, handleImageView);
-  if (isNew) {
+function renderCard(cardData, props={userId: null, isNew: false}) {
+  const card = createCard(cardTemplate, cardData, {delete: handleDelete, like: handleLike, view: handleImageView});
+  if(props.userId && isOwner(cardData.owner._id, props.userId) || props.isNew) {
+    showDeleteBtn(card);
+  }
+
+  if (props.isNew) {
     cardContainer.prepend(card);
   } else {
     cardContainer.append(card);
   }
 }
+
+function setProfileText(newTitle, newDescription) {
+  title.textContent = newTitle;
+  description.textContent = newDescription;
+}
+
+function setProfileAvatar(src) {
+  avatar.src = src;
+};
 
 // Обработчики
 function handleImageView(evt) {
@@ -77,6 +84,10 @@ function handleImageView(evt) {
 function handleModalClose(evt) {
   const modal = evt.currentTarget;
 
+  if (!modal.classList.contains('popup_type_image')) {
+    clearValidation(modal.querySelector('.popup__form'), validationSettings);
+  }
+
   if (evt.target.classList.contains('popup__close') || evt.target === modal) {
     closeModal(modal);
   }
@@ -88,21 +99,38 @@ function handleFormSubmit(evt) {
   const currentForm = evt.target;
 
   if (currentForm === formProfileEdit) {
-    title.textContent = nameInput.value;
-    description.textContent = jobInput.value;
+    updateProfile(nameInput.value, jobInput.value)
+      .then((resProfile) => setProfileText(resProfile.name, resProfile.about));
     closeModal(modalProfileEdit);
   }
 
   if (currentForm === formMestoAdd) {
-    renderCard(cardNameInput.value, cardLinkInput.value, true);
-    closeModal(modalMestoAdd);
+    addCard(cardNameInput.value, cardLinkInput.value)
+      .then((resCard) => renderCard(resCard, {isNew: true}))
+      .catch((err) => console.log(err))
+      .finally(closeModal(modalMestoAdd));
+
     currentForm.reset();
     clearValidation(currentForm, validationSettings);
   }
 }
 
+// Проверка что владелец
+function isOwner(ownerId, cardId) {
+  return ownerId === cardId;
+}
+
 // Вывод карточек на страницу
-getData().forEach(({ name, link }) => renderCard(name, link));
+Promise.all([getUserInfo(), getInitialCards()])
+  .then(([resProfile, resData]) => {
+    // Выводим информацию о профиле
+    setProfileText(resProfile.name, resProfile.about);
+    setProfileAvatar(resProfile.avatar);
+
+    // Выводим карточки на страницу
+    resData.forEach((cardData) => renderCard(cardData, {userId: resProfile._id}));
+  })
+  .catch((err) => console.log(err));
 
 // Обработчики
 modalProfileEdit.addEventListener('click', handleModalClose);
@@ -130,23 +158,6 @@ btnMestoAdd.addEventListener('click', () => {
 // Включение валидации форм
 enableValidation(validationSettings);
 
-
-// Работа с API
-// Получаем данные профиля/карточки
-
-Promise.all([fetchData(apiEndpoint.PROFILE.DATA), fetchData(apiEndpoint.CARDS.LIST)])
-  .then(([resProfile, resData]) => {
-    console.log(resProfile);
-    console.log(resData);
-  });
-
-// Редактирование профиля
-// fetchData(apiEndpoint.PROFILE.DATA, httpMethod.PATCH, {name: 'John', about: 'Doe'})
-//   .then((res) => console.log(res));
-
-// Добавление новой карточки
-// fetchData(apiEndpoint.CARDS.LIST, httpMethod.POST, {name: 'Переславль-Залесский', link: 'https://azbyka.ru/palomnik/images/d/de/Горицкий_монастырь.JPG'})
-//   .then((res) => console.log(res._id));
 
 // Удаление лайка
 // fetchData(apiEndpoint.CARDS.LIKES('675b2d412ea9d60bd1324a1e'), httpMethod.DELETE)

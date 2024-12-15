@@ -78,9 +78,12 @@ const clearValidation = (formElement, config) => {
   const inputList = Array.from(formElement.querySelectorAll(config.inputSelector));
   const buttonElement = formElement.querySelector(config.submitButtonSelector);
   inputList.forEach((inputElement) => {
-    isValid(formElement, inputElement, config);
-    toggleButtonState(inputList, buttonElement, config);
+    if (!inputElement.value.trim()) { 
+      hideInputError(formElement, inputElement, config);
+    }
   });
-}
+
+  toggleButtonState(inputList, buttonElement, config);
+};
 
 export { enableValidation, clearValidation };
