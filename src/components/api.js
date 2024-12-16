@@ -77,4 +77,8 @@ function removeLike(id) {
   return fetchData(API_PATHS.CARDS.LIKES(id), HTTP_METHODS.DELETE);
 }
 
-export { getInitialCards, getUserInfo, updateProfile, addCard, deleteCard, addLike, removeLike };
+function updateAvatar(avatar) {
+  return fetchData(API_PATHS.PROFILE.AVATAR, HTTP_METHODS.PATCH, {avatar});
+}
+
+export { getInitialCards, getUserInfo, updateProfile, addCard, deleteCard, addLike, removeLike, updateAvatar };

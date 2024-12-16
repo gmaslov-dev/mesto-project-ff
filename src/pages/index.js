@@ -3,7 +3,7 @@ import './index.css';
 import { createCard, handleLike, handleDelete, showDeleteBtn } from '../components/card';
 import { closeModal, openModal } from '../components/modal';
 import { clearValidation, enableValidation } from '../components/validation';
-import { getInitialCards, getUserInfo, updateProfile, addCard } from '../components/api';
+import { getInitialCards, getUserInfo, updateProfile, addCard, updateAvatar } from '../components/api';
 
 // DOM-узлы
 const cardTemplate = document.querySelector('#card-template').content;
@@ -32,7 +32,7 @@ const modalImageViewCaption = document.querySelector('.popup__caption');
 // Формы
 const formAvatarUpdate = document.forms['edit-avatar'];
 //TODO наименование ссылок проверить
-const avatarLink = formAvatarUpdate.link;
+const avatarLink = formAvatarUpdate.elements.link;
 
 const formProfileEdit = document.forms['edit-profile'];
 const nameInput = formProfileEdit.elements.name;
@@ -69,8 +69,6 @@ function renderCard(cardData, userId=null, isNew=false) {
   if(userId && cardData.likes.some((like) => userId === like._id)) {
     card.querySelector('.card__like-button').classList.add('card__like-button_is-active');
   }
-
-  
 
   if (isNew) {
     cardContainer.prepend(card);
@@ -113,12 +111,17 @@ function handleModalClose(evt) {
 
 function handleAvatarUpdateSubmit(evt) {
   evt.preventDefault();
-  console.log('submit');
-//updateAvatar()
+  updateAvatar(avatarLink.value)
+    .then((resAvatar) => setProfileAvatar(resAvatar.avatar))
+    .catch((console.log))
+    .finally(() => {
+      
+      closeModal(modalAvatarEdit);
+      formAvatarUpdate.reset();
+      clearValidation(formAvatarUpdate, validationSettings);
+    });
   /*
-  closeModal(modalMestoAdd);
-  formMestoAdd.reset();
-  clearValidation(formMestoAdd, validationSettings);
+  
   */
 }
 
