@@ -1,0 +1,8 @@
+.profile__avatar-icon {
+  width: 24px;
+  height: 24px;
+  background-image: url('<%=require("../../../../../images/edit-icon.svg'); /* Замените на путь к вашей иконке */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}

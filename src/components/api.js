@@ -4,7 +4,7 @@ const token = 'aa73eb14-67e0-49b7-b4c6-6839fe35bf10';
 const cohortId = 'wff-cohort-29';
 
 // Пути 
-const apiEndpoint = {
+const API_PATHS = {
   CARDS: {
     LIST: '/cards',
     SPECIFIC: (cardId) => `/cards/${cardId}`,
@@ -17,7 +17,7 @@ const apiEndpoint = {
 };
 
 // Методы
-const httpMethod = {
+const HTTP_METHODS = {
   GET: 'GET',
   POST: 'POST',
   PUT: 'PUT',
@@ -50,23 +50,31 @@ function fetchData (endpoint, method='GET', body=null) {
 };
 
 const getInitialCards = () => {
-  return fetchData(apiEndpoint.CARDS.LIST);
+  return fetchData(API_PATHS.CARDS.LIST);
 };
 
 const getUserInfo = () => {
-  return fetchData(apiEndpoint.PROFILE.DATA);
+  return fetchData(API_PATHS.PROFILE.DATA);
 }
 
 function updateProfile (name, about) {
-  return fetchData(apiEndpoint.PROFILE.DATA, httpMethod.PATCH, {name, about});
+  return fetchData(API_PATHS.PROFILE.DATA, HTTP_METHODS.PATCH, {name, about});
 }
 
 function addCard(name, link) {
-  return fetchData(apiEndpoint.CARDS.LIST, httpMethod.POST, {name, link});
+  return fetchData(API_PATHS.CARDS.LIST, HTTP_METHODS.POST, {name, link});
 }
 
 function deleteCard(id) {
-  return fetchData(apiEndpoint.CARDS.SPECIFIC(id), httpMethod.DELETE);
+  return fetchData(API_PATHS.CARDS.SPECIFIC(id), HTTP_METHODS.DELETE);
 }
 
-export { getInitialCards, getUserInfo, updateProfile, addCard, deleteCard };
+function addLike(id) {
+  return fetchData(API_PATHS.CARDS.LIKES(id), HTTP_METHODS.PUT);
+}
+
+function removeLike(id) {
+  return fetchData(API_PATHS.CARDS.LIKES(id), HTTP_METHODS.DELETE);
+}
+
+export { getInitialCards, getUserInfo, updateProfile, addCard, deleteCard, addLike, removeLike };

@@ -4,9 +4,10 @@
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
-  background-size: cover;
-  background-position: center;
-  margin: 0 29px 0 0;
+  object-fit: cover;
+  object-position: center;
+
+  transition: opacity 0.3s ease;
 }
 
 @media screen and (max-width: 740px) {
