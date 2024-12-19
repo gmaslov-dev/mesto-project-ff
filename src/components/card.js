@@ -1,7 +1,28 @@
 import { addLike, removeLike } from './api';
-import { handleError } from './utilites';
+import { handleError } from './utils/utilites';
 
-function createCard(cardTemplate, cardData, handlers) {
+function showDeleteBtn(card) {
+  const deleteBtn = card.querySelector('.card__delete-button');
+  deleteBtn.removeAttribute('hidden');
+}
+
+function isOwner(ownerId, cardId) {
+  return ownerId === cardId;
+}
+
+function setDeleteButton(card, cardData, options) {
+  if ((options.userId && isOwner(cardData.owner._id, options.userId)) || options.isNew) {
+    showDeleteBtn(card);
+  }
+}
+
+function setLikeButtom(likeBtn, cardData, options) {
+  if (options.userId && cardData.likes.some((like) => options.userId === like._id)) {
+    likeBtn.classList.add('card__like-button_is-active');
+  }
+}
+
+function createCard(cardTemplate, cardData, options, handlers) {
   const card = cardTemplate.querySelector('.card').cloneNode(true);
   const img = card.querySelector('.card__image');
   const deleteBtn = card.querySelector('.card__delete-button');
@@ -13,6 +34,9 @@ function createCard(cardTemplate, cardData, handlers) {
   img.src = cardData.link;
   card.dataset.id = cardData._id;
   likeCount.textContent = cardData.likes.length;
+
+  setDeleteButton(card, cardData, options);
+  setLikeButtom(likeBtn, cardData, options);
 
   img.addEventListener('click', handlers.view);
   likeBtn.addEventListener('click', handlers.like);
@@ -40,9 +64,4 @@ function handleLike(evt) {
   toggleLike(evt, isLiked);
 }
 
-function showDeleteBtn(card) {
-  const deleteBtn = card.querySelector('.card__delete-button');
-  deleteBtn.removeAttribute('hidden');
-}
-
-export { createCard, handleLike, showDeleteBtn };
+export { createCard, handleLike };
