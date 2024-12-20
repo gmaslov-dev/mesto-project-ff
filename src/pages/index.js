@@ -147,6 +147,7 @@ forms.mestoAdd.addEventListener('submit', handleMestoFormSubmit);
 forms.confirmDelete.addEventListener('submit', handleConfirmDeleteFormSumbit);
 
 buttons.avatarEdit.addEventListener('click', () => {
+  clearValidation(forms.avatarUpdate, validationSettings);
   openModal(modals.avatarEdit);
 });
 
